@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# 输出产物（示例图、生成的报告）
+*.html
+!assets/*.html
+*.png
+!assets/*.png
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+.DS_Store
+*.swp
+
+# 本地配置（不要提交任何密钥）
+.env
+.env.*
+config.local.*
