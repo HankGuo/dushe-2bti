@@ -170,7 +170,7 @@
 渲染器**默认从环境变量取目标名**，优先级：
 
 1. 命令行 `--name "xxx"` 显式指定
-2. 环境变量 `BTI_NAME`（推荐，可自定义；不能用 2BTI_NAME，shell 变量不能数字开头）
+2. 环境变量 `DUSHE_NAME`（推荐，可自定义；不能用 2BTI_NAME，shell 变量不能数字开头）
 3. 环境变量 `USER` / `USERNAME` / `LOGNAME`
 4. 环境变量 `HOSTNAME`
 5. 兜底：`路人甲`

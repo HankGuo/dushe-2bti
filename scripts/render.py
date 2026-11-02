@@ -12,7 +12,7 @@
     - 雷达: Canvas 手绘六边形
     - 象限: CSS/HTML 绘制
     - 16 型人格坐标系（4 轴 × 2 极）
-    - 目标名不硬编码：--name > BTI_NAME > USER/USERNAME/LOGNAME > HOSTNAME > 兜底
+    - 目标名不硬编码：--name > DUSHE_NAME > USER/USERNAME/LOGNAME > HOSTNAME > 兜底
 """
 import json
 import sys
@@ -127,15 +127,15 @@ DIM_META = [
 
 
 def resolve_subject(explicit: str = "") -> str:
-    """解析目标名：--name > BTI_NAME > USER/USERNAME/LOGNAME > HOSTNAME > 兜底。
+    """解析目标名：--name > DUSHE_NAME > USER/USERNAME/LOGNAME > HOSTNAME > 兜底。
 
-    BTI_NAME 用合法 shell 变量名（不能以数字开头，所以不用 2BTI_NAME）。
+    DUSHE_NAME 用合法 shell 变量名（不能以数字开头，所以不用 2BTI_NAME）。
     为兼容某些用程序设环境变量的场景，仍读 2BTI_NAME 作为次选。
     绝不硬编码任何人名。
     """
     if explicit:
         return explicit.strip()
-    for key in ("BTI_NAME", "2BTI_NAME", "USER", "USERNAME", "LOGNAME", "HOSTNAME"):
+    for key in ("DUSHE_NAME", "2BTI_NAME", "USER", "USERNAME", "LOGNAME", "HOSTNAME"):
         val = os.environ.get(key, "").strip()
         if val:
             return val
@@ -726,7 +726,7 @@ def main():
     ap.add_argument("--height", type=int, default=0, help="0=自动探测")
     ap.add_argument("--mobile", action="store_true", help="同时导出 750px 手机竖版")
     ap.add_argument("--name", default="",
-                    help="目标名；不传则依次读 BTI_NAME / USER / USERNAME / LOGNAME / HOSTNAME")
+                    help="目标名；不传则依次读 DUSHE_NAME / USER / USERNAME / LOGNAME / HOSTNAME")
     a = ap.parse_args()
 
     with open(a.profile, encoding="utf-8") as f:

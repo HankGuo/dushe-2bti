@@ -1,5 +1,5 @@
 ---
-name: duoshe-2bti
+name: dushe-2bti
 description: Use when the user wants a personality roast, savage profile, 毒舌2BTI 人格报告, 人格雷达图/词云, or a shareable personality card. 16 型人格坐标系（4 轴 × 2 极）+ 六维雷达 + sprite-mask 词云 + 离线 HTML/PNG 渲染，目标名自动取环境变量，不硬编码任何人名。
 ---
 
@@ -23,12 +23,13 @@ description: Use when the user wants a personality roast, savage profile, 毒舌
 
 **2. 先交付验收，不要主动开源。**
 产物默认只落本地。不要 clone / push 到任何远端仓库，也不要主动建 GitHub 仓库。
+**等用户明确说"开源 / commit and push"再发。**（发布流程见本 skill 末尾的开源前检查清单。）
 
 **3. 人格划分由你自己设计，不要反问用户要哪几个维度。**
 给出一套自洽、可计算、好传播的坐标系，用公式算象限，不要拍脑袋。
 
 **4. 绝不硬编码任何人名。**
-名字来源：`--name` > 环境变量 `BTI_NAME` > `USER`/`USERNAME`/`LOGNAME` > `HOSTNAME` > `路人甲`。
+名字来源：`--name` > 环境变量 `DUSHE_NAME` > `USER`/`USERNAME`/`LOGNAME` > `HOSTNAME` > `路人甲`。
 示例文件必须是虚构人物，不得含真实账号、路径、硬件信息。
 
 **5. 16 型不能只是 16 张换色卡片 —— 每族必须有独立的视觉语言。**
@@ -94,14 +95,14 @@ description: Use when the user wants a personality roast, savage profile, 毒舌
 
 ```bash
 # 只出 HTML（目标名自动取环境变量）
-python3 ~/.hermes/skills/duoshe-2bti/scripts/render.py profile.json -o out.html
+python3 ~/.hermes/skills/dushe-2bti/scripts/render.py profile.json -o out.html
 
 # 出 HTML + 桌面 PNG + 手机竖版 PNG（推荐，手机版适合发社交平台）
-python3 ~/.hermes/skills/duoshe-2bti/scripts/render.py profile.json \
+python3 ~/.hermes/skills/dushe-2bti/scripts/render.py profile.json \
   -o out.html --png out.png --mobile
 
 # 显式指定目标名
-python3 ~/.hermes/skills/duoshe-2bti/scripts/render.py profile.json -o out.html --name "张三"
+python3 ~/.hermes/skills/dushe-2bti/scripts/render.py profile.json -o out.html --name "张三"
 ```
 
 渲染器**零外部依赖**（无 CDN），离线可用，HTML 可直接开源分发。
@@ -109,13 +110,13 @@ python3 ~/.hermes/skills/duoshe-2bti/scripts/render.py profile.json -o out.html 
 
 ## 目标名解析
 
-优先级：`--name` > `BTI_NAME` > `USER` / `USERNAME` / `LOGNAME` > `HOSTNAME` > `路人甲`
+优先级：`--name` > `DUSHE_NAME` > `USER` / `USERNAME` / `LOGNAME` > `HOSTNAME` > `路人甲`
 
-> ⚠️ 用 `BTI_NAME` 而不是 `2BTI_NAME`——**shell 变量名不能以数字开头**，
+> ⚠️ 用 `DUSHE_NAME` 而不是 `2BTI_NAME`——**shell 变量名不能以数字开头**，
 > `2BTI_NAME=x cmd` 会报"未找到命令"。代码里仍兼容读 `2BTI_NAME`（程序设环境变量的场景）。
 
 ```bash
-BTI_NAME="小王" python3 render.py p.json -o out.html
+DUSHE_NAME="小王" python3 render.py p.json -o out.html
 ```
 
 ## 文件说明
@@ -125,6 +126,9 @@ BTI_NAME="小王" python3 render.py p.json -o out.html
 | `references/2bti-taxonomy.md` | **16 型全表**、四轴定义、六维释义、毒舌评级、词云词池、JSON 结构、判型公式 |
 | `scripts/render.py` | JSON → 自包含 HTML（+可选 PNG）。零外部依赖 |
 | `assets/profile.example.json` | **虚构示例**（拖延症画像），可直接跑通验证渲染 |
+
+**已开源**：https://github.com/HankGuo/dushe-2bti （MIT）
+安装：把整个目录放进 agent 的 skills 目录（`~/.hermes/skills/`、`.claude/skills/` 等）。
 
 ## JSON 数据结构（关键字段）
 
@@ -233,21 +237,27 @@ vision 不可用时，改用 DOM 几何检查（横向溢出、文字截断、�
 
 ## 开源前检查清单
 
+**先读 `github` skill 的 `references/repo-management.md` §11**，那节是完整的
+发布流程（可见性决策 → 身份扫描 → 提交 → 建仓推送 → 从公开 URL 重新 clone 验证）。
+
 ```bash
 cd 技能目录
 
-# 1) 隐私扫描（应全部 0）
-for k in 真实姓名 真实账号 /home/你的用户名 真实IP; do grep -rl "$k" . ; done
+# 1) 身份/凭据扫描（文本 + 二进制一起扫）
+python3 ~/.hermes/skills/software-development/github/scripts/scan_publish_tree.py . \
+  --name "<真实姓名>" --handle "<github handle>" \
+  --path "/home/<用户名>" --host "<主机名>" --ip "<内网IP>"
+# → 退出码 0 = 干净；1 = 有泄漏，先修再发
 
-# 2) 清 pycache（会带绝对路径）
+# 2) 清 pycache（会带绝对路径，且 .gitignore 只挡未来提交）
 rm -rf scripts/__pycache__
 
-# 3) 16 型覆盖 + 可达性验证
+# 3) 16 型覆盖 + 可达性验证（THEMES / TYPE_NAMES / TYPE_GLYPHS 三张表都要齐）
 python3 -c "
 import sys, itertools, random; sys.path.insert(0,'scripts')
-from render import THEMES, TYPE_NAMES, classify
+from render import THEMES, TYPE_NAMES, TYPE_GLYPHS, classify
 codes=[f'{a}{b}-{c}{d}' for a,b,c,d in itertools.product('BP','RT','SD','LF')]
-assert all(c in THEMES and c in TYPE_NAMES for c in codes), 'THEMES/名称有缺'
+assert all(c in THEMES and c in TYPE_NAMES and c in TYPE_GLYPHS for c in codes), '有类型缺表项'
 hit=set()
 random.seed(42)
 for _ in range(200000):
@@ -255,6 +265,10 @@ for _ in range(200000):
 print('16 型覆盖 OK，随机可达', len(hit), '/16')
 "
 ```
+
+**推完必须从公开 URL 重新 clone 一次跑**——本地能跑 ≠ clone 下来能跑。
+`.gitignore` 排掉的运行期文件、只存在于本机的示例数据、没提交的依赖，
+只有这样才测得出来。
 
 - 产物是**单个自包含 HTML**，无外部请求、无追踪、离线可看
 - 词云是自研算法，非商用词云库，无版权问题

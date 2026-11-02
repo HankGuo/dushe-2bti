@@ -56,13 +56,13 @@ python3 scripts/render.py my-profile.json -o me.html --png me.png --mobile --nam
 **环境要求**：Python 3.9+、Chrome（仅出 PNG 时需要）。
 
 不传 `--name` 时，目标名自动按这个顺序取：
-`BTI_NAME` → `USER` → `USERNAME` → `LOGNAME` → `HOSTNAME` → `路人甲`
+`DUSHE_NAME` → `USER` → `USERNAME` → `LOGNAME` → `HOSTNAME` → `路人甲`
 
 ```bash
-BTI_NAME="小王" python3 scripts/render.py p.json -o out.html
+DUSHE_NAME="小王" python3 scripts/render.py p.json -o out.html
 ```
 
-> ⚠️ 为什么叫 `BTI_NAME` 不叫 `2BTI_NAME`：**shell 变量名不能以数字开头**，
+> ⚠️ 为什么叫 `DUSHE_NAME` 不叫 `2BTI_NAME`：**shell 变量名不能以数字开头**，
 > `2BTI_NAME=x cmd` 会报"未找到命令"。
 
 ---
@@ -156,7 +156,7 @@ BTI_NAME="小王" python3 scripts/render.py p.json -o out.html
 - **自动测高再截图**：页面把 `scrollHeight` 写进 `<html data-pageh>`，截图前先 `--dump-dom` 读出来。
   硬编码高度在窄屏下必然裁切（实测差 1500px）
 - **判型可计算**：不给 `type_code` 时按六维公式自动算，不靠人拍脑袋
-- **不硬编码任何人名**：目标名走 `--name` > `BTI_NAME` > `USER`/`USERNAME`/`LOGNAME` > `HOSTNAME` > `路人甲`
+- **不硬编码任何人名**：目标名走 `--name` > `DUSHE_NAME` > `USER`/`USERNAME`/`LOGNAME` > `HOSTNAME` > `路人甲`
 - **隐私安全**：渲染器不联网、不读任何外部文件，只吃你给的 JSON。示例数据是虚构人物
 
 ---
