@@ -20,6 +20,8 @@ import html
 import argparse
 import subprocess
 import os
+import shutil
+import tempfile
 
 # ---- 16 型配色表（与 references/2bti-taxonomy.md 保持一致）----
 THEMES = {
@@ -701,20 +703,66 @@ window.addEventListener('resize', ()=>setTimeout(drawAll,100));
 </html>"""
 
 
-def probe_height(html_path: str, width: int, probe_width_pad: int = 400) -> int:
+def find_chrome():
+    """跨平台探测 Chrome / Chromium / Edge 可执行文件路径。"""
+    env_c = os.environ.get("CHROME_BIN") or os.environ.get("PUPPETEER_EXECUTABLE_PATH")
+    if env_c and os.path.exists(env_c):
+        return env_c
+
+    candidates = ["google-chrome", "google-chrome-stable", "chromium", "chromium-browser", "chrome"]
+    for c in candidates:
+        p = shutil.which(c)
+        if p:
+            return p
+
+    if sys.platform == "darwin":
+        mac_candidates = [
+            "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+            "/Applications/Chromium.app/Contents/MacOS/Chromium",
+            "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
+            os.path.expanduser("~/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"),
+        ]
+        for p in mac_candidates:
+            if os.path.exists(p):
+                return p
+    elif sys.platform == "win32":
+        win_candidates = [
+            r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+            r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
+            os.path.expandvars(r"%LOCALAPPDATA%\Google\Chrome\Application\chrome.exe"),
+            r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
+            r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
+        ]
+        for p in win_candidates:
+            if os.path.exists(p):
+                return p
+
+    return None
+
+
+def probe_height(html_path: str, width: int, probe_width_pad: int = 400, chrome_bin: str = "google-chrome") -> int:
     """用 Chrome --dump-dom 探测页面真实高度（读取 <html data-pageh>）。"""
     import re
-    cmd = [
-        "google-chrome", "--headless", "--disable-gpu", "--no-sandbox",
-        "--hide-scrollbars", "--virtual-time-budget=6000",
-        f"--window-size={width},{probe_width_pad}",
-        "--dump-dom", f"file://{html_path}",
-    ]
-    r = subprocess.run(cmd, capture_output=True, text=True, errors="ignore")
-    m = re.findall(r'data-pageh="(\d+)"', r.stdout or "")
-    if not m:
+    temp_dir = tempfile.mkdtemp(prefix="dushe_probe_")
+    try:
+        cmd = [
+            chrome_bin,
+            f"--user-data-dir={temp_dir}",
+            "--headless", "--disable-gpu", "--no-sandbox",
+            "--no-first-run", "--no-default-browser-check",
+            "--hide-scrollbars", "--virtual-time-budget=6000",
+            f"--window-size={width},{probe_width_pad}",
+            "--dump-dom", f"file://{html_path}",
+        ]
+        r = subprocess.run(cmd, capture_output=True, text=True, errors="ignore", timeout=30)
+        m = re.findall(r'data-pageh="(\d+)"', r.stdout or "")
+        if not m:
+            return 0
+        return max(int(x) for x in m) + 60  # 底部留白
+    except Exception:
         return 0
-    return max(int(x) for x in m) + 60  # 底部留白
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
 
 
 def main():
@@ -750,22 +798,38 @@ def main():
     print(f"HTML -> {out}  ({os.path.getsize(out)//1024} KB)")
 
     if a.png:
+        chrome_bin = find_chrome()
+        if not chrome_bin:
+            print("⚠️ 未找到可用的 Chrome / Chromium 浏览器，跳过 PNG 截图导出。")
+            print("  提示: 可安装 Google Chrome，或通过环境变量 CHROME_BIN 指定浏览器路径。")
+            return
+
         png = os.path.abspath(a.png)
 
         def shoot(w, h, target):
-            cmd = [
-                "google-chrome", "--headless", "--disable-gpu", "--no-sandbox",
-                "--hide-scrollbars", "--force-device-scale-factor=2",
-                f"--screenshot={target}", f"--window-size={w},{h}",
-                "--virtual-time-budget=9000", f"file://{out}",
-            ]
-            subprocess.run(cmd, capture_output=True)
-            if os.path.exists(target):
-                print(f"PNG  -> {target}  ({os.path.getsize(target)//1024} KB)")
-                return True
-            return False
+            temp_dir = tempfile.mkdtemp(prefix="dushe_shoot_")
+            try:
+                cmd = [
+                    chrome_bin,
+                    f"--user-data-dir={temp_dir}",
+                    "--headless", "--disable-gpu", "--no-sandbox",
+                    "--no-first-run", "--no-default-browser-check",
+                    "--hide-scrollbars", "--force-device-scale-factor=2",
+                    f"--screenshot={target}", f"--window-size={w},{h}",
+                    "--virtual-time-budget=9000", f"file://{out}",
+                ]
+                subprocess.run(cmd, capture_output=True, timeout=60)
+                if os.path.exists(target):
+                    print(f"PNG  -> {target}  ({os.path.getsize(target)//1024} KB)")
+                    return True
+                return False
+            except Exception as e:
+                print(f"截图异常: {e}")
+                return False
+            finally:
+                shutil.rmtree(temp_dir, ignore_errors=True)
 
-        h = a.height or probe_height(out, a.width)
+        h = a.height or probe_height(out, a.width, chrome_bin=chrome_bin)
         if not h:
             h = 3200
             print(f"高度探测失败，回退 {h}px")
@@ -774,7 +838,7 @@ def main():
         shoot(a.width, h, png)
 
         if a.mobile:
-            mh = probe_height(out, 750) or 3800
+            mh = probe_height(out, 750, chrome_bin=chrome_bin) or 3800
             print(f"手机版高度: {mh}px")
             mtarget = png.replace(".png", "_mobile.png")
             shoot(750, mh, mtarget)
