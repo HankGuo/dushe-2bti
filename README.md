@@ -102,22 +102,7 @@ L/F  对待不确定性        Lock（要结论）/ Flow（随缘）
 
 ---
 
-## 安装细节
-
-装到哪、各 agent 的目录对照、批量部署、卸载 —— 见 **[INSTALL.md](INSTALL.md)**。
-
-| Agent | 安装目录 | 调用方式 |
-|---|---|---|
-| **Hermes Agent** | `~/.hermes/skills/` | 自动触发 |
-| **Claude Code** | `~/.claude/skills/` | `/dushe-2bti` |
-| **Codex CLI** | `~/.agents/skills/` | `$dushe-2bti` 或 `/skills` |
-| **Cursor** | `~/.cursor/skills/` 或 `~/.agents/skills/` | `/` 唤出 |
-| **Gemini CLI** | `~/.gemini/skills/` 或 `~/.agents/skills/` | 模型自动 `activate_skill` |
-| **GitHub Copilot** | `~/.copilot/skills/` 或 `~/.agents/skills/` | 自动 + `/` |
-| **OpenCode** | `~/.config/opencode/skills/` | 自动 + skill 工具 |
-| **OpenClaw** | `~/.openclaw/skills/` | 自动 |
-| **Goose / Amp / Windsurf / Roo / Cline / Zed / Warp / Kilo / Crush…** | 各自目录，多数也读 `.agents/skills/` | 自动 |
-| **裸 LLM API** | — | 把 `SKILL.md` 内容贴进 system prompt |
+---
 
 ## 怎么用
 
@@ -219,7 +204,10 @@ DUSHE_NAME="小王" python3 scripts/render.py p.json -o out.html
 
 ---
 
-## 四族视觉语言
+<details>
+<summary><b>16 型的视觉设计</b>（四族视觉语言 + 每型专属符号）</summary>
+
+### 四族视觉语言
 
 16 型不是同一张卡换 16 种颜色——**四个大族各有独立的视觉语言**，从背景纹理到卡片质感到雷达图填充全都不一样。
 
@@ -232,7 +220,7 @@ DUSHE_NAME="小王" python3 scripts/render.py p.json -o out.html
 
 族由 `type_code` 的**前两位**决定，后两位决定同族内的细分性格。
 
-## 每型专属元素
+### 每型专属元素
 
 除了配色，每型还有自己的**符号徽章 / 罪状条 / 印章**：
 
@@ -260,15 +248,8 @@ DUSHE_NAME="小王" python3 scripts/render.py p.json -o out.html
 
 ---
 
-## 作为 Agent Skill 使用
 
-这个仓库同时是一个 [Agent Skill](https://docs.claude.com/en/docs/agents-and-tools/skills)：
-把整个目录放到 agent 的 skills 目录即可（如 `~/.hermes/skills/`、`.claude/skills/`）。
-
-`SKILL.md` 里封装了完整的毒舌提示词工作流：
-**采集证据 → 打分定象限 → 写五刀 → 渲染**，并带硬约束（不硬编码人名、先验收后开源、词云必须排第一）。
-
-兼容 Hermes Agent / Claude Code / Codex / Cursor 等吃 `SKILL.md` 约定的框架。
+</details>
 
 ---
 
@@ -314,7 +295,10 @@ DUSHE_NAME="小王" python3 scripts/render.py p.json -o out.html
 
 ---
 
-## 自定义 / 扩展
+<details>
+<summary><b>自定义与扩展</b>（改配色 / 加新类型 / 改判型阈值）</summary>
+
+### 自定义 / 扩展
 
 | 想改什么 | 改哪里 |
 |---|---|
@@ -344,6 +328,11 @@ assert all(c in THEMES and c in TYPE_NAMES and c in TYPE_GLYPHS for c in codes)
 print('OK')
 "
 ```
+
+---
+
+
+</details>
 
 ---
 
