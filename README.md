@@ -59,11 +59,23 @@ L/F  对待不确定性        Lock（要结论）/ Flow（随缘）
 npx skills add HankGuo/dushe-2bti
 
 # 或用 GitHub CLI 官方命令（需要 gh ≥ 2.90.0）
-gh skill install HankGuo/dushe-2bti
+gh skill install HankGuo/dushe-2bti dushe-2bti --agent claude-code --scope user
 ```
 
 两个命令都会**自动识别你本机装了哪些 agent**，装到对应目录。
-加 `--list` 可以先看看仓库里有什么：`npx skills add HankGuo/dushe-2bti --list`
+
+- `gh skill install` 需要指定 skill 名（`dushe-2bti`）；`--agent` 可选
+  `claude-code` / `codex` / `cursor` / `gemini-cli` / `github-copilot` / `opencode` /
+  `openclaw` / `universal` 等 40+ 种，也支持 `--dir` 装到任意目录
+- `universal` 会装到 `.agents/skills/`（Agent Skills 通用目录），**除 Claude Code 外几乎所有 agent 都读它**
+- `gh skill` 会往 frontmatter 注入溯源元数据（`github-repo` / `github-ref` / `github-tree-sha`），
+  之后可以用 `gh skill update dushe-2bti` 一键更新
+
+先看看仓库里有什么：
+```bash
+npx skills add HankGuo/dushe-2bti --list
+gh skill preview HankGuo/dushe-2bti dushe-2bti
+```
 
 ### 按 agent 手动安装
 
@@ -82,7 +94,8 @@ git clone https://github.com/HankGuo/dushe-2bti.git ~/.agents/skills/dushe-2bti
 | **Gemini CLI** | `~/.gemini/skills/` 或 `~/.agents/skills/` | 模型自动 `activate_skill` |
 | **GitHub Copilot** | `~/.copilot/skills/` 或 `~/.agents/skills/` | 自动 + `/` |
 | **OpenCode** | `~/.config/opencode/skills/` | 自动 + skill 工具 |
-| **Goose / Amp / Windsurf / Roo / Cline / Zed / Warp** | 各自目录，多数也读 `.agents/skills/` | 自动 |
+| **OpenClaw** | `~/.openclaw/skills/` | 自动 |
+| **Goose / Amp / Windsurf / Roo / Cline / Zed / Warp / Kilo / Crush…** | 各自目录，多数也读 `.agents/skills/` | 自动 |
 | **裸 LLM API** | — | 把 `SKILL.md` 内容贴进 system prompt |
 
 **装多个 agent 时最省事的做法**：装到 `.agents/skills/`，再给 Claude Code 软链一个。

@@ -21,8 +21,8 @@ description: Use when the user wants a personality roast, savage profile, 毒舌
 词云必须排第一：它是唯一能"一眼截图直接发出去"的区块，传播性最强；
 雷达图紧随其后承接视觉。**不要按"数据逻辑"把雷达图或人格结论提到最前面**。
 
-**2. 先交付验收，不要主动开源。**
-产物默认只落本地。不要 clone / push 到任何远端仓库，也不要主动建 GitHub 仓库。
+**2. 改完先交付验收；发布要用户点头。**
+产物默认只落本地。**不要主动 clone / push 到任何远端仓库，也不要主动建 GitHub 仓库。**
 **等用户明确说"开源 / commit and push"再发。**（发布流程见本 skill 末尾的开源前检查清单。）
 
 **3. 人格划分由你自己设计，不要反问用户要哪几个维度。**
@@ -141,7 +141,15 @@ DUSHE_NAME="小王" python3 render.py p.json -o out.html
 | `assets/profile.example.json` | **虚构示例**（拖延症画像），可直接跑通验证渲染 |
 
 **已开源**：https://github.com/HankGuo/dushe-2bti （MIT）
-安装：把整个目录放进 agent 的 skills 目录（`~/.hermes/skills/`、`.claude/skills/` 等）。
+
+安装（一行命令，两种主流方式任选）：
+```bash
+npx skills add HankGuo/dushe-2bti
+gh skill install HankGuo/dushe-2bti dushe-2bti --agent claude-code --scope user
+```
+手动：把 `skills/dushe-2bti/` 整个目录放进 agent 的 skills 目录
+（`~/.hermes/skills/`、`~/.claude/skills/`、`~/.agents/skills/` 等）。
+详见仓库 README 的 Installation 章节。
 
 ## JSON 数据结构（关键字段）
 
@@ -254,20 +262,19 @@ vision 不可用时，改用 DOM 几何检查（横向溢出、文字截断、�
 发布流程（可见性决策 → 身份扫描 → 提交 → 建仓推送 → 从公开 URL 重新 clone 验证）。
 
 ```bash
-cd 技能目录
+cd 仓库根目录
 
 # 1) 身份/凭据扫描（文本 + 二进制一起扫）
-python3 ~/.hermes/skills/software-development/github/scripts/scan_publish_tree.py . \
-  --name "<真实姓名>" --handle "<github handle>" \
-  --path "/home/<用户名>" --host "<主机名>" --ip "<内网IP>"
-# → 退出码 0 = 干净；1 = 有泄漏，先修再发
+# 身份/凭据扫描（换成你本机对应的真实值）
+grep -rniE "<真实姓名>|<github handle>|/home/<用户名>|<主机名>|<内网IP>" . --exclude-dir=.git
+# → 无输出 = 干净；有命中先修再发
 
 # 2) 清 pycache（会带绝对路径，且 .gitignore 只挡未来提交）
-rm -rf scripts/__pycache__
+rm -rf skills/dushe-2bti/scripts/__pycache__
 
 # 3) 16 型覆盖 + 可达性验证（THEMES / TYPE_NAMES / TYPE_GLYPHS 三张表都要齐）
 python3 -c "
-import sys, itertools, random; sys.path.insert(0,'scripts')
+import sys, itertools, random; sys.path.insert(0,'skills/dushe-2bti/scripts')
 from render import THEMES, TYPE_NAMES, TYPE_GLYPHS, classify
 codes=[f'{a}{b}-{c}{d}' for a,b,c,d in itertools.product('BP','RT','SD','LF')]
 assert all(c in THEMES and c in TYPE_NAMES and c in TYPE_GLYPHS for c in codes), '有类型缺表项'

@@ -15,15 +15,18 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC="$SCRIPT_DIR/skills/$SKILL_NAME"
 
 # agent slug : 个人级目录 : 项目级目录
+# slug 跟 gh skill install --agent 的取值对齐
 AGENTS=(
-  "claude-code|$HOME/.claude/skills|$HOME/.claude/skills"
-  "codex|$HOME/.agents/skills|$HOME/.agents/skills"
-  "cursor|$HOME/.cursor/skills|$HOME/.cursor/skills"
-  "gemini|$HOME/.gemini/skills|$HOME/.gemini/skills"
-  "copilot|$HOME/.copilot/skills|$HOME/.copilot/skills"
-  "opencode|$HOME/.config/opencode/skills|$HOME/.config/opencode/skills"
-  "hermes|$HOME/.hermes/skills|$HOME/.hermes/skills"
-  "agents|$HOME/.agents/skills|$HOME/.agents/skills"
+  "claude-code|$HOME/.claude/skills"
+  "codex|$HOME/.agents/skills"
+  "cursor|$HOME/.cursor/skills"
+  "gemini-cli|$HOME/.gemini/skills"
+  "github-copilot|$HOME/.copilot/skills"
+  "opencode|$HOME/.config/opencode/skills"
+  "openclaw|$HOME/.openclaw/skills"
+  "hermes|$HOME/.hermes/skills"
+  "universal|$HOME/.agents/skills"
+  "agents|$HOME/.agents/skills"
 )
 
 usage() { sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'; }
@@ -34,7 +37,7 @@ list_agents() {
   printf "  %-12s %-38s %s\n" "SLUG" "个人级目录" "本机检测"
   printf "  %-12s %-38s %s\n" "----" "--------" "--------"
   for entry in "${AGENTS[@]}"; do
-    IFS='|' read -r slug home _ <<< "$entry"
+    IFS='|' read -r slug home <<< "$entry"
     if [ -d "$home" ]; then
       mark="✅ 已安装目录"
     elif [ -d "$(dirname "$home")" ]; then
@@ -52,7 +55,7 @@ list_agents() {
 detect_agents() {
   local found=()
   for entry in "${AGENTS[@]}"; do
-    IFS='|' read -r slug home _ <<< "$entry"
+    IFS='|' read -r slug home <<< "$entry"
     [ -d "$home" ] && found+=("$slug")
   done
   printf '%s\n' "${found[@]}" | sort -u
@@ -78,7 +81,7 @@ install_one() {
 uninstall_all() {
   local n=0
   for entry in "${AGENTS[@]}"; do
-    IFS='|' read -r slug home _ <<< "$entry"
+    IFS='|' read -r slug home <<< "$entry"
     local dest="$home/$SKILL_NAME"
     if [ -e "$dest" ] || [ -L "$dest" ]; then
       rm -rf "$dest"; echo "  🗑  已移除 $dest"; n=$((n+1))
@@ -102,7 +105,7 @@ if [ -n "${1:-}" ]; then
   TARGET="$1"
   FOUND=""
   for entry in "${AGENTS[@]}"; do
-    IFS='|' read -r slug home _ <<< "$entry"
+    IFS='|' read -r slug home <<< "$entry"
     [ "$slug" = "$TARGET" ] && FOUND="$entry"
   done
   if [ -z "$FOUND" ]; then
