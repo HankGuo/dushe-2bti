@@ -704,12 +704,17 @@ window.addEventListener('resize', ()=>setTimeout(drawAll,100));
 
 
 def find_chrome():
-    """跨平台探测 Chrome / Chromium / Edge 可执行文件路径。"""
+    """跨平台探测 Chrome / Chromium / Edge / Arc / Brave 等浏览器路径。"""
     env_c = os.environ.get("CHROME_BIN") or os.environ.get("PUPPETEER_EXECUTABLE_PATH")
     if env_c and os.path.exists(env_c):
         return env_c
 
-    candidates = ["google-chrome", "google-chrome-stable", "chromium", "chromium-browser", "chrome"]
+    candidates = [
+        "google-chrome", "google-chrome-stable", "google-chrome-unstable",
+        "chromium", "chromium-browser",
+        "microsoft-edge", "microsoft-edge-stable", "msedge",
+        "brave-browser", "brave", "chrome"
+    ]
     for c in candidates:
         p = shutil.which(c)
         if p:
@@ -718,9 +723,16 @@ def find_chrome():
     if sys.platform == "darwin":
         mac_candidates = [
             "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-            "/Applications/Chromium.app/Contents/MacOS/Chromium",
             "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
+            "/Applications/Arc.app/Contents/MacOS/Arc",
+            "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser",
+            "/Applications/Chromium.app/Contents/MacOS/Chromium",
+            "/Applications/Vivaldi.app/Contents/MacOS/Vivaldi",
+            "/Applications/Opera.app/Contents/MacOS/Opera",
             os.path.expanduser("~/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"),
+            os.path.expanduser("~/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge"),
+            os.path.expanduser("~/Applications/Arc.app/Contents/MacOS/Arc"),
+            os.path.expanduser("~/Applications/Brave Browser.app/Contents/MacOS/Brave Browser"),
         ]
         for p in mac_candidates:
             if os.path.exists(p):
@@ -732,8 +744,25 @@ def find_chrome():
             os.path.expandvars(r"%LOCALAPPDATA%\Google\Chrome\Application\chrome.exe"),
             r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
             r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
+            os.path.expandvars(r"%LOCALAPPDATA%\Microsoft\Edge\Application\msedge.exe"),
+            r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe",
+            os.path.expandvars(r"%LOCALAPPDATA%\BraveSoftware\Brave-Browser\Application\brave.exe"),
         ]
         for p in win_candidates:
+            if os.path.exists(p):
+                return p
+    elif sys.platform.startswith("linux"):
+        linux_candidates = [
+            "/usr/bin/google-chrome",
+            "/usr/bin/google-chrome-stable",
+            "/usr/bin/chromium",
+            "/usr/bin/chromium-browser",
+            "/snap/bin/chromium",
+            "/usr/bin/microsoft-edge",
+            "/usr/bin/microsoft-edge-stable",
+            "/usr/bin/brave-browser",
+        ]
+        for p in linux_candidates:
             if os.path.exists(p):
                 return p
 
@@ -765,20 +794,45 @@ def probe_height(html_path: str, width: int, probe_width_pad: int = 400, chrome_
         shutil.rmtree(temp_dir, ignore_errors=True)
 
 
+def shoot_playwright(html_path, w, h, target):
+    try:
+        from playwright.sync_api import sync_playwright
+        with sync_playwright() as pw:
+            browser = pw.chromium.launch(headless=True)
+            page = browser.new_page(viewport={"width": w, "height": h or 2800}, device_scale_factor=2)
+            page.goto(f"file://{html_path}")
+            page.wait_for_timeout(1000)
+            page.screenshot(path=target, full_page=True)
+            browser.close()
+            return os.path.exists(target)
+    except Exception:
+        return False
+
 def main():
     ap = argparse.ArgumentParser(description="毒舌2BTI 渲染器 v3（16 型）")
-    ap.add_argument("profile")
-    ap.add_argument("-o", "--out", default="2bti.html")
-    ap.add_argument("--png")
+    ap.add_argument("profile", nargs="?", default="", help="JSON 文件路径或 -（标准输入）")
+    ap.add_argument("--json", "--data", dest="json_str", default="", help="直接传入 JSON 字符串")
+    ap.add_argument("-o", "--out", default="2bti.html", help="HTML 输出路径")
+    ap.add_argument("--png", nargs="?", const="2bti.png", default="2bti.png",
+                    help="PNG 输出路径（默认 2bti.png）")
+    ap.add_argument("--no-png", action="store_true", help="显式关闭 PNG 导出")
     ap.add_argument("--width", type=int, default=1240)
     ap.add_argument("--height", type=int, default=0, help="0=自动探测")
-    ap.add_argument("--mobile", action="store_true", help="同时导出 750px 手机竖版")
+    ap.add_argument("--mobile", action="store_true", default=True, help="同时导出 750px 手机竖版（默认开启）")
+    ap.add_argument("--no-mobile", action="store_false", dest="mobile", help="关闭手机竖版导出")
     ap.add_argument("--name", default="",
                     help="目标名；不传则依次读 DUSHE_NAME / USER / USERNAME / LOGNAME / HOSTNAME")
     a = ap.parse_args()
 
-    with open(a.profile, encoding="utf-8") as f:
-        p = json.load(f)
+    if a.json_str:
+        p = json.loads(a.json_str)
+    elif a.profile == "-" or (not a.profile and not sys.stdin.isatty()):
+        p = json.load(sys.stdin)
+    elif a.profile:
+        with open(a.profile, encoding="utf-8") as f:
+            p = json.load(f)
+    else:
+        ap.error("请提供 profile.json 文件路径、标准输入或 --json 参数")
 
     subject = resolve_subject(a.name)
     # 若 JSON 未给 type_code，则按四轴规则自动判定
@@ -797,11 +851,23 @@ def main():
     print(f"目标: {subject}  |  判定: {code} {TYPE_NAMES.get(code,('',''))[0]}")
     print(f"HTML -> {out}  ({os.path.getsize(out)//1024} KB)")
 
-    if a.png:
+    if a.png and not a.no_png:
         chrome_bin = find_chrome()
+        png = os.path.abspath(a.png)
+
         if not chrome_bin:
-            print("⚠️ 未找到可用的 Chrome / Chromium 浏览器，跳过 PNG 截图导出。")
-            print("  提示: 可安装 Google Chrome，或通过环境变量 CHROME_BIN 指定浏览器路径。")
+            # 尝试回退到 playwright
+            pw_ok = shoot_playwright(out, a.width, a.height or 3200, png)
+            if pw_ok:
+                print(f"PNG (Playwright) -> {png}")
+                if a.mobile:
+                    mtarget = png.replace(".png", "_mobile.png")
+                    shoot_playwright(out, 750, 3800, mtarget)
+                    print(f"PNG Mobile -> {mtarget}")
+                return
+            print("⚠️ 未找到可用的 Chrome / Edge / Chromium 浏览器或 Playwright，跳过自动截图。")
+            print(f"  ✅ 但 HTML 处决卡已生成: file://{out}")
+            print("  💡 提示: 可直接在浏览器中打开该 HTML 查看或手动截图。")
             return
 
         png = os.path.abspath(a.png)

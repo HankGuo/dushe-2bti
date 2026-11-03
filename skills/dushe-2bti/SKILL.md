@@ -1,9 +1,14 @@
 ---
 name: dushe-2bti
-description: Use when the user wants a personality roast, savage profile, 毒舌2BTI 人格报告, 人格雷达图/词云, or a shareable personality card. 16 型人格坐标系（4 轴 × 2 极）+ 六维雷达 + sprite-mask 词云 + 离线 HTML/PNG 渲染，目标名自动取环境变量，不硬编码任何人名。
+description: 毒舌2BTI 人格卡片生成器。当用户要求"毒舌我/骂我/测试我/生成2BTI/评价我"时使用。强制执行铁律：最终输出必须是调用 Python 渲染器生成的 PNG 卡片图片（以及 HTML），绝对禁止仅在对话框输出纯文本！Agent 必须调用 Bash 工具执行本地 Python 脚本生成图片，并将图片以图片格式展示给用户！
 ---
 
 # 毒舌2BTI — 毒舌人格生成器（16 型）
+
+> 🚨 **Agent 终态铁律（绝对禁止仅输出纯文本）**：  
+> **本技能的核心交付物是且只能是渲染出的视觉卡片（PNG 图片与 HTML 文件）！严禁只在聊天窗口打字回复！**  
+> 用户安装此技能是为了获得可转发的人格长图海报。若你在对话框里仅输出了文字总结，用户会判定技能失败。  
+> **你必须调用终端工具（Bash / Command Execution）执行本地 Python 渲染脚本，生成 PNG 图片后将图片路径以 Markdown 形式交付给用户！**
 
 把一个人扔进自创的 **2BTI 坐标系（4 轴 × 2 极 = 16 型）**，
 产出 **人格词云 → 六维雷达 → 象限定位 → 毒舌解剖 → 判决依据 → 转发文案**，
@@ -16,6 +21,9 @@ description: Use when the user wants a personality roast, savage profile, 毒舌
 - 用户提到 **2BTI** / **毒舌2BTI**
 
 ## 刚性约束（用户拍板过，不要自作主张改）
+
+**0. 终态必须生成文件并出图：严禁只在对话框打字。**
+无论宿主 Agent 是 WorkBuddy、Cursor、Trae、Codex、Kimi Code 还是 Claude Code，必须完整走完「生成数据 JSON → 调用脚本出图 → 输出图片路径」的工具调用闭环。
 
 **1. 版面顺序固定：词云 → 雷达 → 象限 → 毒舌 → 证据 → 转发。**
 词云必须排第一：它是唯一能"一眼截图直接发出去"的区块，传播性最强；
@@ -48,7 +56,7 @@ description: Use when the user wants a personality roast, savage profile, 毒舌
 改动任一层后，用四族各出一张图做**像素级对比**（背景纹理饱和度、徽章主色、边框粗细），
 确认差异客观存在——不能凭代码推断"应该不一样了"。
 
-## 工作流（三步，禁止跳步）
+## Agent 自动化执行闭环（必须调用工具，禁止跳步）
 
 ### 第 1 步：采集证据（最重要）
 
@@ -82,7 +90,7 @@ description: Use when the user wants a personality roast, savage profile, 毒舌
 **证据不足怎么办**：宁可用风格化描述（`subtitle` / `manifesto` / 词云标签），
 也不要编造"事实型"毒舌。`evidence` 里只放真有的东西。
 
-### 第 2 步：打分与写毒舌
+### 第 2 步：打分并保存数据到临时文件
 
 读 `references/2bti-taxonomy.md` 拿 **16 型全表**、六维释义、词云词池、JSON 结构。
 
@@ -96,27 +104,30 @@ description: Use when the user wants a personality roast, savage profile, 毒舌
   L/F = (抗压值 + 落地力) / 2    ≥60 → L
   ```
 - **毒舌黄金五刀**：
-  1. 第一刀要**好笑**，让人愿意往下看
-  2. 第二刀要**准**，拿事实打脸
-  3. 第三刀要**狠但不好笑**——扎到他嘴硬的地方
-  4. 第四刀往死里扎
-  5. 第五刀留个**能截图的结论**
-- **禁忌**：骂**行为模式**，不骂人格/外貌/智商/家庭
-- **词云词条要具体**：`工具收藏家` `嘴上说算了` `明天开始`（✓）；`优秀` `勤奋`（✗）
+  1. 第一刀好笑；2. 第二刀准（拿事实打脸）；3. 第三刀狠；4. 第四刀往死里扎；5. 第五刀留个截图结论。
+- **将生成的完整 JSON 保存为本地临时文件**：`/tmp/dushe_profile.json`。
 
-### 第 3 步：渲染
+### 第 3 步：调用工具执行渲染命令出图（关键核心！）
+
+**Agent 必须调用 Bash / Terminal 工具**执行以下命令，脚本会自动导出 HTML、1240px 桌面 PNG 以及 750px 手机竖版 PNG：
 
 ```bash
-# 只出 HTML（目标名自动取环境变量）
-python3 scripts/render.py profile.json -o out.html
+# 自动寻找并执行本技能自带的 render.py（兼容 WorkBuddy / Cursor / Trae / Codex / Claude 等安装路径）
+RENDER_PY=$(find ~/.workbuddy/skills ~/.agents/skills ~/.claude/skills ~/.gemini/skills ~/.cursor/skills ~/.trae/skills . -name "render.py" -path "*/dushe-2bti/*" 2>/dev/null | head -n 1)
+if [ -z "$RENDER_PY" ]; then
+  RENDER_PY="$(pwd)/skills/dushe-2bti/scripts/render.py"
+fi
 
-# 出 HTML + 桌面 PNG + 手机竖版 PNG（推荐，手机版适合发社交平台）
-python3 scripts/render.py profile.json \
-  -o out.html --png out.png --mobile
-
-# 显式指定目标名
-python3 scripts/render.py profile.json -o out.html --name "张三"
+python3 "$RENDER_PY" /tmp/dushe_profile.json -o /tmp/2bti.html --png /tmp/2bti.png --mobile
 ```
+
+### 第 4 步：向用户交付产物
+
+生成完成后，在最终回复中**必须呈现图片**：
+1. 桌面端高清长图：`![2BTI处决卡](file:///tmp/2bti.png)`
+2. 手机端适配长图：`[📱 手机端适配长图](file:///tmp/2bti_mobile.png)`
+3. 离线网页文件：`[🌐 离线高清单页](file:///tmp/2bti.html)`
+4. 附带 2~3 句核心毒舌金句作为看图引言（切忌在对话框重复堆砌冗长内容）。
 
 渲染器**零外部依赖**（无 CDN），离线可用，HTML 可直接开源分发。
 `--png` 会自动用 Chrome `--dump-dom` 探测真实页面高度再截图，`--mobile` 额外出 750px 竖版。

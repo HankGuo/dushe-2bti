@@ -33,6 +33,8 @@ ZIP_URL = f"https://github.com/{REPO}/archive/refs/heads/main.zip"
 
 # slug : 个人级 skills 目录
 AGENTS = {
+    "workbuddy":     "~/.workbuddy/skills",
+    "trae":          "~/.trae/skills",
     "claude-code":   "~/.claude/skills",
     "codex":         "~/.agents/skills",
     "cursor":        "~/.cursor/skills",
@@ -41,6 +43,7 @@ AGENTS = {
     "opencode":      "~/.config/opencode/skills",
     "openclaw":      "~/.openclaw/skills",
     "hermes":        "~/.hermes/skills",
+    "antigravity":   "~/.gemini/skills",
 }
 
 # 这些 agent 共用通用目录，装一次全中

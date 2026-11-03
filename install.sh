@@ -17,6 +17,8 @@ SRC="$SCRIPT_DIR/skills/$SKILL_NAME"
 # agent slug : 个人级目录 : 项目级目录
 # slug 跟 gh skill install --agent 的取值对齐
 AGENTS=(
+  "workbuddy|$HOME/.workbuddy/skills"
+  "trae|$HOME/.trae/skills"
   "claude-code|$HOME/.claude/skills"
   "codex|$HOME/.agents/skills"
   "cursor|$HOME/.cursor/skills"
