@@ -7,52 +7,60 @@
 
 ---
 
-## 安装：复制这句话，发给你的 agent
-
-```
-帮我安装 https://github.com/HankGuo/dushe-2bti 这个 agent skill。
-
-做法（不要问我，你自己做完，全程不要让我装任何东西）：
-
-第 1 步：把安装器弄到手 —— 挑一个你这台机器能用的方式，都试不通再问我：
-   A（推荐，有 git，最稳）:
-     git clone --depth 1 https://github.com/HankGuo/dushe-2bti.git /tmp/dushe-2bti
-   B（没有 git，用 Python 标准库）:
-     python3 -c "import urllib.request;urllib.request.urlretrieve('https://raw.githubusercontent.com/HankGuo/dushe-2bti/main/install.py','/tmp/dushe-2bti-install.py')"
-   C（有 gh CLI）:
-     gh repo clone HankGuo/dushe-2bti /tmp/dushe-2bti
-
-第 2 步：运行安装器，它会自己探测你的 agent 目录、自己装、自己跑渲染验证：
-   - 用了 A 或 C：python3 /tmp/dushe-2bti/install.py
-   - 用了 B：python3 /tmp/dushe-2bti-install.py
-
-第 3 步：把验证结果和安装路径告诉我。
-
-装好后这个 skill 的用法是：对 agent 说「毒舌我一下」或「给我出个人格报告」。
-```
-
-**用户只需要有 Python 3.9+**（macOS/Linux/Windows 都自带）。
-不需要 `npx`、不需要 `gh`、不需要 `pip install`、不需要装任何第三方包。
-复制粘贴一句话，剩下的 agent 全包。
-
-装到哪、怎么用、怎么改，见 **[INSTALL.md](INSTALL.md)**。
-
-<details>
-<summary>进阶：批量部署 / CI 用的命令行</summary>
+## 安装
 
 ```bash
-# 零依赖安装器（本仓库自带，纯标准库）
-python3 install.py                    # 自动探测 agent 目录
-python3 install.py --list             # 看看本机有哪些 agent
-python3 install.py --target ~/.claude/skills
-python3 install.py --uninstall
-
-# 行业主流 CLI（可选，不是必需的）
 npx skills add HankGuo/dushe-2bti
+```
+
+<details>
+<summary>其他方式</summary>
+
+**没有 Node.js？** 用纯 Python 安装器（零依赖）：
+
+```bash
+python3 install.py
+```
+
+它自动探测 agent 目录、自动下载、自动跑渲染验证。
+参数：`--list` / `--target <dir>` / `--uninstall`。
+
+**GitHub CLI（需要 gh ≥ 2.90.0）：**
+
+```bash
 gh skill install HankGuo/dushe-2bti dushe-2bti --agent claude-code --scope user
 ```
 
+**手动：**
+
+```bash
+git clone https://github.com/HankGuo/dushe-2bti.git ~/.agents/skills/dushe-2bti
+```
+
+**各 agent 的安装目录**
+
+| Agent | 目录 | 调用 |
+|---|---|---|
+| Hermes Agent | `~/.hermes/skills/` | 自动触发 |
+| Claude Code | `~/.claude/skills/` | `/dushe-2bti` |
+| Codex CLI | `~/.agents/skills/` | `$dushe-2bti` |
+| Cursor | `~/.cursor/skills/` | `/` 唤出 |
+| Gemini CLI | `~/.gemini/skills/` | 模型自动激活 |
+| GitHub Copilot | `~/.copilot/skills/` | 自动 + `/` |
+| OpenCode | `~/.config/opencode/skills/` | 自动 |
+| OpenClaw | `~/.openclaw/skills/` | 自动 |
+
+Claude Code 不读 `.agents/`，要单独装一次：`python3 install.py --target ~/.claude/skills`
+
 </details>
+
+**或者把这句话直接发给 agent：**
+
+```
+帮我安装 https://github.com/HankGuo/dushe-2bti 这个 skill
+```
+
+完整说明见 **[INSTALL.md](INSTALL.md)**。
 
 ---
 
