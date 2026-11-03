@@ -1,341 +1,238 @@
+<p align="center">
+  <img src="./docs/images/banner.png" alt="毒舌2BTI · Savage 2BTI Banner" width="100%" />
+</p>
+
 # 毒舌2BTI · Savage 2BTI
 
-> 算力白肉出品 · 一个自创的 16 型人格坐标系 + 一张能直接发朋友圈的毒舌人格报告。
-> 词云 + 六维雷达 + 象限定位 + 五刀毒舌 + 判决依据，一键出图。
+<p align="center">
+  <a href="https://github.com/HankGuo/dushe-2bti"><img src="https://img.shields.io/github/stars/HankGuo/dushe-2bti?style=social" alt="GitHub stars" /></a>
+  <a href="https://gitee.com/hank_guo/dushe-2bti"><img src="https://img.shields.io/badge/Gitee-国内极速镜像-C71D23.svg?logo=gitee&logoColor=white" alt="Gitee Mirror" /></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License" /></a>
+  <img src="https://img.shields.io/badge/Python-3.9+-3776AB.svg?logo=python&logoColor=white" alt="Python" />
+  <a href="https://github.com/HankGuo/dushe-2bti"><img src="https://img.shields.io/badge/Agent_Skill-dushe--2bti-9945FF.svg" alt="Agent Skill" /></a>
+  <a href="https://aichi.food"><img src="https://img.shields.io/badge/公众号-算力白肉-07C160.svg?logo=wechat&logoColor=white" alt="算力白肉" /></a>
+</p>
 
-**16 型** · 4 轴 × 2 极 · 零外部依赖 · 离线可用 · 单文件 HTML
+> **算力白肉出品** · 专为 AI 深度患者打造的自创 **16 型人格坐标系** + **四大视觉家族** + 一张能直接发朋友圈的毒舌人格长图。
+>
+> 词云 + 六维雷达 + 象限定位 + 五刀毒舌 + 真实判决依据，纯离线零外部依赖，一键生成！
 
 ---
 
-## 安装
+## 视觉效果一览
+
+16 型人格绝非简单的换色模版，而是由两级坐标派生出的 **四大独立视觉家族**（涵盖背景纹理、雷达填充、卡片质感、徽章符号与印章）：
+
+<table>
+  <tr>
+    <td align="center" width="25%">
+      <img src="./docs/images/demo_henren.png" alt="BR 施工现场" width="100%" /><br>
+      <b>BR-DL 狠人</b><br>
+      <sub>施工现场 · 斜纹硬核</sub>
+    </td>
+    <td align="center" width="25%">
+      <img src="./docs/images/demo_fenheguai.png" alt="BT 工程蓝图" width="100%" /><br>
+      <b>BT-SF 缝合怪</b><br>
+      <sub>工程蓝图 · 精密发光</sub>
+    </td>
+    <td align="center" width="25%">
+      <img src="./docs/images/demo_jianshuxia.png" alt="PR 舞台聚光" width="100%" /><br>
+      <b>PR-SF 键鼠侠</b><br>
+      <sub>舞台聚光 · 极简霓虹</sub>
+    </td>
+    <td align="center" width="25%">
+      <img src="./docs/images/demo_jiluguan.png" alt="PT 公文档案" width="100%" /><br>
+      <b>PT-DF 记录官</b><br>
+      <sub>公文档案 · 羊皮卷纸</sub>
+    </td>
+  </tr>
+</table>
+
+---
+
+## 极速安装
+
+### 方式 A：Agent Skills 规范安装（推荐）
 
 ```bash
 npx skills add HankGuo/dushe-2bti
 ```
 
-<details>
-<summary>其他方式</summary>
+### 方式 B：国内网络极速克隆（Gitee 镜像）
 
-**没有 Node.js？** 用纯 Python 安装器（零依赖）：
+国内用户如遇 GitHub 连通性波动，可直接使用 Gitee 高速通道克隆：
+
+```bash
+# 以通用 .agents 目录为例：
+git clone https://gitee.com/hank_guo/dushe-2bti.git ~/.agents/skills/dushe-2bti
+
+# WorkBuddy 用户：
+git clone https://gitee.com/hank_guo/dushe-2bti.git ~/.workbuddy/skills/dushe-2bti
+
+# Trae 用户：
+git clone https://gitee.com/hank_guo/dushe-2bti.git ~/.trae/skills/dushe-2bti
+```
+
+### 方式 C：零依赖一键 Python 安装器
+
+仓库内置跨平台安装脚本，自动探测所有已知 Agent 目录、自动软链并运行渲染自检：
 
 ```bash
 python3 install.py
 ```
 
-它自动探测 agent 目录、自动下载、自动跑渲染验证。
-参数：`--list` / `--target <dir>` / `--uninstall`。
+<details>
+<summary><b>查看各主流 Agent 的安装目录与触发方式</b></summary>
 
-**GitHub CLI（需要 gh ≥ 2.90.0）：**
-
-```bash
-gh skill install HankGuo/dushe-2bti dushe-2bti --agent claude-code --scope user
-```
-
-**手动：**
-
-```bash
-git clone https://github.com/HankGuo/dushe-2bti.git ~/.agents/skills/dushe-2bti
-```
-
-**各 agent 的安装目录**
-
-| Agent | 目录 | 调用 |
+| Agent | 安装目录 | 唤出 / 触发方式 |
 |---|---|---|
-| Hermes Agent | `~/.hermes/skills/` | 自动触发 |
-| Claude Code | `~/.claude/skills/` | `/dushe-2bti` |
-| Codex CLI | `~/.agents/skills/` | `$dushe-2bti` |
-| Cursor | `~/.cursor/skills/` | `/` 唤出 |
-| Gemini CLI | `~/.gemini/skills/` | 模型自动激活 |
-| GitHub Copilot | `~/.copilot/skills/` | 自动 + `/` |
-| OpenCode | `~/.config/opencode/skills/` | 自动 |
-| OpenClaw | `~/.openclaw/skills/` | 自动 |
+| **WorkBuddy** | `~/.workbuddy/skills/` | 自然语言自动识别 / 菜单选择 |
+| **Trae** | `~/.trae/skills/` | 自然语言自动识别 |
+| **Cursor** | `~/.cursor/skills/` 或 `~/.agents/skills/` | 输入 `/` 唤出或直接聊天 |
+| **Claude Code** | `~/.claude/skills/` | 输入 `/dushe-2bti` |
+| **Codex CLI** | `~/.agents/skills/` | 输入 `$dushe-2bti` 或自然语言 |
+| **Antigravity / Gemini CLI** | `~/.gemini/skills/` 或 `~/.agents/skills/` | 模型自动 `activate_skill` |
+| **GitHub Copilot** | `~/.copilot/skills/` 或 `~/.agents/skills/` | 自动识别 + `/` |
+| **Hermes Agent** | `~/.hermes/skills/` | 自动匹配激活 |
+| **OpenCode / OpenClaw** | `~/.config/opencode/skills/` | 自动加载 |
 
-Claude Code 不读 `.agents/`，要单独装一次：`python3 install.py --target ~/.claude/skills`
+> Claude Code 默认不读取 `~/.agents/`，建议指定目标安装：`python3 install.py --target ~/.claude/skills`
 
 </details>
 
-**或者把这句话直接发给 agent：**
+### 方式 D：直接对你的 AI 助手说人话
+
+把下面这句话发给你的 Agent（WorkBuddy / Trae / Cursor / Claude Code / Codex 等）：
 
 ```
 帮我安装 https://github.com/HankGuo/dushe-2bti 这个 skill
+# 国内用户发：
+帮我安装 https://gitee.com/hank_guo/dushe-2bti 这个 skill
 ```
 
-完整说明见 **[INSTALL.md](INSTALL.md)**。
+完整安装文档见 **[INSTALL.md](INSTALL.md)**。
 
 ---
 
-## 这是什么
+## 这是什么：16 型坐标系
 
-MBTI 给你 4 个字母，2BTI 给你 **4 个字母 + 一张能截图的图**，还顺手骂你一顿。
+MBTI 给你 4 个字母，**2BTI 给你 4 个字母 + 一张能发朋友圈的毒舌长图**，顺手把你骨子里的拖延与装腔作势剥得干干净净：
 
 ```
-B/P  能不能造出东西      Build（真造） / Paper（纸上）
-R/T  干事的姿态          Rogue（野）   / Tame（稳）
-S/D  驱动力来源          Spark（外部） / Drive（内在）
-L/F  对待不确定性        Lock（要结论）/ Flow（随缘）
+B / P   能不能造出东西      Build（真造） / Paper（纸上）
+R / T   干事的姿态          Rogue（野性） / Tame（稳健）
+S / D   驱动力来源          Spark（外部） / Drive（内在）
+L / F   对待不确定性        Lock（要结论）/ Flow（随缘）
 ```
 
-四轴组合 → **16 型**，每型有名字、有人设、有毒舌金句、有专属配色。
+四轴两极组合 → **16 型完整人格谱系**：
 
-| 代号 | 名称 | 一句话人设 |
-|---|---|---|
-| `BR-SL` | 莽夫 | 一句话开干，边骂边造，撞墙再绕 |
-| `BR-SF` | 疯批 | 想到就烧，烧完自己都记不清 |
-| `BR-DL` | 狠人 | 不需要灵感，流程跑起来就停不下来 |
-| `BR-DF` | 游击队长 | 专挑硬骨头打，打完就跑不占道 |
-| `BT-SL` | 军令型 | 拍完就干，干完要复盘 |
-| `BT-SF` | 缝合怪 | 什么都收一点，什么都不算精通 |
-| `BT-DL` | 铁匠 | 交付之王，造得出还稳 |
-| `BT-DF` | 掌柜 | 系统跑着就行，别来烦我 |
-| `PR-SL` | 戏精 | 空中楼阁大师，情绪比方案先到 |
-| `PR-SF` | 键鼠侠 | 键盘上纵横四海，落地寸步难行 |
-| `PR-DL` | 空想家 | 脑内已经上市，实际还在草稿 |
-| `PR-DF` | 甩锅王 | 想法甩出去，执行不归我 |
-| `PT-SL` | 军师 | 想得透就是不动手 |
-| `PT-SF` | 观察员 | 看得很准，看完就散 |
-| `PT-DL` | 苦行僧 | 计划完美，执行缺席 |
-| `PT-DF` | 记录官 | 整理得头头是道，就是不开始 |
+| 代号 | 名称 | 一句话人设 | 视觉家族 |
+|---|---|---|---|
+| `BR-SL` | 莽夫 | 一句话开干，边骂边造，撞墙再绕 | 施工现场 ⚡ |
+| `BR-SF` | 疯批 | 想到就烧，烧完自己都记不清 | 施工现场 🔥 |
+| `BR-DL` | 狠人 | 不需要灵感，流水线跑起来停不下来 | 施工现场 ⚙️ |
+| `BR-DF` | 游击队长 | 专挑硬骨头打，打完就跑不占道 | 施工现场 🎯 |
+| `BT-SL` | 军令型 | 拍完就干，干完要复盘 | 工程蓝图 🎖️ |
+| `BT-SF` | 缝合怪 | 什么都收一点，什么都不算精通 | 工程蓝图 🧩 |
+| `BT-DL` | 铁匠 | 交付之王，造得出还稳如泰山 | 工程蓝图 🔨 |
+| `BT-DF` | 掌柜 | 系统跑着就行，少来烦我 | 工程蓝图 🏪 |
+| `PR-SL` | 戏精 | 空中楼阁大师，情绪比方案先到 | 舞台聚光 🎭 |
+| `PR-SF` | 键鼠侠 | 键盘上纵横四海，落地寸步难行 | 舞台聚光 ⌨️ |
+| `PR-DL` | 空想家 | 脑内已经上市，实际还在草稿 | 舞台聚光 💭 |
+| `PR-DF` | 甩锅王 | 想法甩出去，执行不归我 | 舞台聚光 🏳️ |
+| `PT-SL` | 军师 | 想得比谁都透，就是不肯动手 | 公文档案 ♟ |
+| `PT-SF` | 观察员 | 看得很准，看完就散 | 公文档案 👁 |
+| `PT-DL` | 苦行僧 | 计划完美无瑕，执行永远缺席 | 公文档案 🕯 |
+| `PT-DF` | 记录官 | 整理得头头是道，就是不开始 | 公文档案 🗂 |
 
-完整定义见 [`skills/dushe-2bti/references/2bti-taxonomy.md`](skills/dushe-2bti/references/2bti-taxonomy.md)。
-
----
+完整坐标系定义与打分公式见 [`skills/dushe-2bti/references/2bti-taxonomy.md`](skills/dushe-2bti/references/2bti-taxonomy.md)。
 
 ---
 
----
+## 怎么使用
 
-## 怎么用
-
-装完之后**不用记命令**，直接跟 agent 说人话：
+安装后**不用记命令**，直接跟 Agent 说人话：
 
 ```
 毒舌我一下
-给我出个人格报告
-锐评一下我的人格
+帮我出个 2BTI 深度人格报告
+根据我们的聊天记录，客观毒舌一下我
 ```
 
-agent 会自动加载这个 skill，按 `SKILL.md` 里的流程走：
-**采集证据 → 打分定 16 型 → 写五刀毒舌 → 渲染出图**。
+Agent 会自动加载技能，按标准流水线执行：
+**采集对话证据 → 六维打分定 16 型 → 撰写 5 刀毒舌 → 离线渲染高质量长图**。
 
-### 三种触发方式
+### 命令行直跑（零依赖 Python 脚本）
 
-| 方式 | 例子 | 说明 |
-|---|---|---|
-| **自然语言**（推荐） | 「毒舌我一下」 | agent 读 description 自动匹配 |
-| **斜杠命令** | `/dushe-2bti` | Claude Code / Cursor 显式调用 |
-| **命令行直跑** | `python3 scripts/render.py profile.json -o out.html` | 不经过 agent，自己填 JSON |
-
-### 自己填数据跑（进阶）
-
-`skills/dushe-2bti/scripts/render.py` 是零依赖的，任何人拿到 JSON 就能出图：
+拿到 JSON 数据即可脱离 Agent 本地直接生成：
 
 ```bash
-# 跑示例（虚构人物）
+# 运行虚构人物示例（输出 HTML + 1240px 长图 + 750px 手机版 PNG）
 python3 skills/dushe-2bti/scripts/render.py \
-  skills/dushe-2bti/assets/profile.example.json -o out.html --png out.png --mobile
+  skills/dushe-2bti/assets/profile.example.json \
+  -o out.html --png out.png --mobile
 
-# 换成你自己的画像
-python3 skills/dushe-2bti/scripts/render.py my.json -o me.html --png me.png --mobile --name "你的名字"
+# 指定报告主角名字（优先级最高）
+python3 skills/dushe-2bti/scripts/render.py \
+  profile.json -o me.html --png me.png --mobile --name "你的名字"
 ```
 
-**目标名不写死**，优先级：`--name` > 环境变量 `DUSHE_NAME` > `USER`/`USERNAME`/`LOGNAME` > `HOSTNAME` > `路人甲`
-
-```bash
-DUSHE_NAME="小王" python3 scripts/render.py my.json -o out.html
-```
-
-**给 agent 用的时候不用你填 JSON**——它会自己按六维打分、按四轴公式判型。
-
-### JSON 字段速查
-
-| 字段 | 留空会怎样 |
-|---|---|
-| `subject` / `title` | 自动取环境变量 / 自动生成「毒舌2BTI · {名字}」 |
-| `type_code` | 按六维公式自动判定 16 型 |
-| `type_name` / `type_en` | 按 `type_code` 自动补 |
-| `dimensions` | **必填**，六维 0-100 |
-| `roast` | 五刀毒舌正文 |
-| `evidence` | 每条毒舌的依据（要真实） |
-| `wordcloud` | 词云词条 + 权重 |
-| `share` | 一句话转发文案 + 话题标签 |
-
-完整结构见 [`skills/dushe-2bti/references/2bti-taxonomy.md`](skills/dushe-2bti/references/2bti-taxonomy.md) 第九节。
+名字解析优先级：
+`--name` > 环境变量 `DUSHE_NAME` > 系统变量 `USER`/`USERNAME`/`LOGNAME` > `HOSTNAME` > `路人甲`
 
 ---
 
-**环境要求**：Python 3.9+、Chrome（仅出 PNG 时需要）。
+## 技术亮点与工程设计
 
-不传 `--name` 时，目标名自动按这个顺序取：
-`DUSHE_NAME` → `USER` → `USERNAME` → `LOGNAME` → `HOSTNAME` → `路人甲`
-
-```bash
-DUSHE_NAME="小王" python3 scripts/render.py p.json -o out.html
-```
-
-> ⚠️ 为什么叫 `DUSHE_NAME` 不叫 `2BTI_NAME`：**shell 变量名不能以数字开头**，
-> `2BTI_NAME=x cmd` 会报"未找到命令"。
-
----
-
-## 输出长什么样
-
-```
-┌─────────────────────────────────────────┐
-│         毒 舌 2 B T I                    │
-│         毒舌2BTI · 你的名字               │
-│   一句会被人截图的第一行总结…              │
-├──────────────┬──────────────────────────┤
-│  PR-SF       │  键盘上纵横四海，           │
-│  键鼠侠      │  落地寸步难行              │
-│  THE KEYBOARD│  「人格宣言…」  ★★☆☆☆    │
-├──────────────┴──────────────────────────┤
-│  01 人格词云        02 六维人格雷达       │
-│  ┌───────────┐      ┌───────────┐       │
-│  │ 词 词 词   │      │    ◇      │       │
-│  │   词 词    │      │  ◇   ◇    │       │
-│  └───────────┘      └───────────┘       │
-├─────────────────────────────────────────┤
-│  03 象限定位（四条轴，条状图）             │
-│  04 毒舌解剖（五刀）                       │
-│  05 判决依据（每条毒舌对应真实证据）        │
-│  06 一句话转发 + 话题标签                  │
-└─────────────────────────────────────────┘
-```
-
----
-
-<details>
-<summary><b>16 型的视觉设计</b>（四族视觉语言 + 每型专属符号）</summary>
-
-### 四族视觉语言
-
-16 型不是同一张卡换 16 种颜色——**四个大族各有独立的视觉语言**，从背景纹理到卡片质感到雷达图填充全都不一样。
-
-| 族 | 主题 | 背景纹理 | 卡片质感 | 雷达填充 | 徽章形状 |
-|---|---|---|---|---|---|
-| **BR** 能造×野 | **施工现场** | 斜向警示条纹 | 3px 粗边框 + 8px 硬阴影 | 斜纹 | 圆角方牌 |
-| **BT** 能造×稳 | **工程蓝图** | 细网格 + 十字准线 | 1px 细线 + 内发光 | 渐变 | 小圆角方牌 |
-| **PR** 纸上×野 | **舞台聚光** | 顶部聚光锥 | 2px 双线 + 大圆角 | 柔和径向 | 粗描边圆牌 |
-| **PT** 纸上×稳 | **公文档案** | 横线稿纸 + 装订线 | 直角 + 轻投影 | 交叉斜线 | 双线方牌 |
-
-族由 `type_code` 的**前两位**决定，后两位决定同族内的细分性格。
-
-### 每型专属元素
-
-除了配色，每型还有自己的**符号徽章 / 罪状条 / 印章**：
-
-| 代号 | 名称 | 符号 | 罪状条 | 印章 |
-|---|---|---|---|---|
-| `BR-SL` | 莽夫 | ⚡ | 现场直击 | 说干就干 |
-| `BR-SF` | 疯批 | 🔥 | 失控现场 | 想到就烧 |
-| `BR-DL` | 狠人 | ⚙️ | 流水线作业 | 停不下来 |
-| `BR-DF` | 游击队长 | 🎯 | 专挑硬骨头 | 打完就跑 |
-| `BT-SL` | 军令型 | 🎖️ | 下达命令 | 说到做到 |
-| `BT-SF` | 缝合怪 | 🧩 | 东拼西凑 | 什么都收 |
-| `BT-DL` | 铁匠 | 🔨 | 交付现场 | 造得出还稳 |
-| `BT-DF` | 掌柜 | 🏪 | 生意兴隆 | 系统跑着 |
-| `PR-SL` | 戏精 | 🎭 | 排练现场 | 情绪先行 |
-| `PR-SF` | 键鼠侠 | ⌨️ | 键盘江湖 | 纵横四海 |
-| `PR-DL` | 空想家 | 💭 | 脑内上市 | 想得真美 |
-| `PR-DF` | 甩锅王 | 🏳️ | 责任转移 | 执行不归我 |
-| `PT-SL` | 军师 | ♟ | 沙盘推演 | 想得比谁透 |
-| `PT-SF` | 观察员 | 👁 | 现场观察 | 看得很准 |
-| `PT-DL` | 苦行僧 | 🕯 | 修行记录 | 计划完美 |
-| `PT-DF` | 记录官 | 🗂 | 卷宗归档 | 整理得头头是道 |
-
-> 符号一律放在**渐变底板**上渲染。原因：♟👁🕯🗂 这类深色 emoji 在深色背景上几乎不可见（实测彩色像素只有 5 个），
-> 加底板 + 高光 + 内阴影后亮度占比提升到 12%~76%。
-
----
-
-
-</details>
-
----
-
-## 设计要点
-
-- **零外部依赖**：无 CDN、无 Chart.js、无词云库、不内嵌字体。单 HTML 约 23KB
-- **四族视觉语言**：背景纹理 / 卡片质感 / 雷达填充 / 徽章形状全部按族切换，不是换色模板
-- **词云用 sprite-mask 位图碰撞**：把每个词渲染到离屏 canvas 取 alpha 当掩码，逐像素比对。
-  矩形包围盒对中文词形误判严重，会导致大量词放不下
-- **自动测高再截图**：页面把 `scrollHeight` 写进 `<html data-pageh>`，截图前先 `--dump-dom` 读出来。
-  硬编码高度在窄屏下必然裁切（实测差 1500px）
-- **判型可计算**：不给 `type_code` 时按六维公式自动算，不靠人拍脑袋
-- **不硬编码任何人名**：目标名走 `--name` > `DUSHE_NAME` > `USER`/`USERNAME`/`LOGNAME` > `HOSTNAME` > `路人甲`
-- **隐私安全**：渲染器不联网、不读任何外部文件，只吃你给的 JSON。示例数据是虚构人物
+- 🚀 **零外部依赖**：纯 Python 标准库 + 纯内联原生 SVG/Canvas/CSS。无 CDN、无 Chart.js、无外部字体请求，单个 HTML 仅 ~23KB。
+- 🎨 **四族独立视觉语言**：背景纹理（斜纹/网格/聚光/公文）、卡片阴影、雷达填充与专属印章全面解耦，拒绝换色快餐模板。
+- 🧩 **Sprite-Mask 位图碰撞词云算法**：将词条逐个渲染至离屏 Canvas 提取 Alpha 掩码进行像素级碰撞检测，解决传统矩形包围盒中文字形误判漏排的顽疾。
+- 📏 **自适应测量无缝截图**：动态计算页面真实 `scrollHeight`，无缝支持高分屏 1240px 桌面大图与 750px 手机满屏双尺寸输出。
+- 🔒 **纯本地隐私安全**：渲染器无任何网络收发行为，完全在本地执行，对话数据绝不上云。
 
 ---
 
 ## 目录结构
 
-遵循 **Agent Skills 开放标准**的布局——`skills/<skill-name>/SKILL.md`，所以 `gh skill` 和 `npx skills` 都能识别。
+遵循 **Agent Skills 开放标准规范**：
 
 ```
 .
-├── install.sh                       # 一键安装脚本（自动探测 agent）
-├── LICENSE                          # MIT
+├── install.py                       # 跨平台自动安装器（自动检测 Agent、软链、渲染自检）
+├── install.sh                       # 一键 Shell 安装引导脚本
+├── LICENSE                          # MIT 协议
 ├── README.md
-├── .gitignore
+├── INSTALL.md                       # 详细安装排错手册
+├── docs/images/                     # 文档视觉素材（Banner 与家族效果图）
 └── skills/
     └── dushe-2bti/
-        ├── SKILL.md                 # Agent 技能定义（工作流 + 硬约束 + 提示词）
+        ├── SKILL.md                 # Agent 技能定义（硬核约束 + 执行流水线 + 提示词）
         ├── references/
-        │   └── 2bti-taxonomy.md     # 16 型全表 + 四轴定义 + 判型公式 + 视觉语言 + JSON 结构
+        │   └── 2bti-taxonomy.md     # 16 型全谱系 + 判型公式 + 视觉系统规范
         ├── scripts/
-        │   └── render.py            # JSON → HTML / PNG 渲染器（零依赖）
+        │   └── render.py            # 零依赖 JSON → HTML / PNG 渲染器
         └── assets/
-            └── profile.example.json # 虚构示例（拖延症画像）
-```
-
-**为什么不是根目录放 SKILL.md**：GitHub CLI 的 `gh skill` 只认
-`skills/*/SKILL.md`、`*/SKILL.md` 等特定路径，根目录的 SKILL.md 它发现不了。
-`npx skills` 能发现但默认会在根目录 SKILL.md 存在时停止向下搜索。
-放在 `skills/` 下是 superpowers、addyosmani/agent-skills、vercel-labs/skills 的通用做法。
-
----
-
-<details>
-<summary><b>自定义与扩展</b>（改配色 / 加新类型 / 改判型阈值）</summary>
-
-### 自定义 / 扩展
-
-| 想改什么 | 改哪里 |
-|---|---|
-| 加人格型 | `render.py` 的 `THEMES` + `TYPE_NAMES` + `TYPE_GLYPHS`，同步更新 taxonomy |
-| 换配色 | `render.py` 的 `THEMES`（每型 `a`/`b` 两个主色） |
-| 换符号/罪状条/印章 | `render.py` 的 `TYPE_GLYPHS` |
-| 改整族视觉语言 | `render.py` 的 `FAMILIES`（背景 pattern / 雷达 radar / 边框 / 圆角 / 阴影） |
-| 改判型阈值 | `render.py` 的 `classify()`（默认 B≥60 / R≥60 / S≥55 / L≥60） |
-| 改六维名称 | `render.py` 的 `DIM_META` |
-| 改版面顺序 | `render.py` 里 HTML 模板的区块顺序 |
-
-### 加一个新类型的完整步骤
-
-1. `THEMES` 里加 `"XX-XX": {"a": "#...", "b": "#..."}`
-2. `TYPE_NAMES` 里加 `"XX-XX": ("中文名", "ENGLISH NAME")`
-3. `TYPE_GLYPHS` 里加 `"XX-XX": {"sym": "🎯", "charge": "罪状条", "stamp": "印章"}`
-4. 如果是新族，还要在 `FAMILIES` 里加一族视觉语言，并写对应的 `body.fam-XX` CSS
-5. 在 `references/2bti-taxonomy.md` 补上表格行
-6. 跑一遍验证：
-
-```bash
-python3 -c "
-import sys, itertools; sys.path.insert(0,'scripts')
-from render import THEMES, TYPE_NAMES, TYPE_GLYPHS, classify
-codes=[f'{a}{b}-{c}{d}' for a,b,c,d in itertools.product('BP','RT','SD','LF')]
-assert all(c in THEMES and c in TYPE_NAMES and c in TYPE_GLYPHS for c in codes)
-print('OK')
-"
+            └── profile.example.json # 拖延症虚构测试画像
 ```
 
 ---
 
+## 关于作者与交流
 
-</details>
+本项目由 **Hank (五花肉)** 独立设计与开发，首发于公众号 **「算力白肉」**。
+
+- 📖 **微信公众号**：**「算力白肉」** —— 从工程师工作台出发，写跑得通、能交付的硬核 AI 工具与 Agent 实践。
+- 🌐 **个人主页**：[aichi.food](https://aichi.food)
+- 🏢 **工作室**：[rayda-tech.com](https://www.rayda-tech.com)
+- 🐦 **X (Twitter)**：[@HANK_G_](https://twitter.com/HANK_G_)
+- 🐙 **GitHub**：[@HankGuo](https://github.com/HankGuo)
+- 🇨🇳 **Gitee 镜像**：[hank_guo/dushe-2bti](https://gitee.com/hank_guo/dushe-2bti)
 
 ---
 
 ## License
 
-MIT — 随便用、随便改、随便商用。署名不强制，但骂得准的话记得说是 2BTI 干的。
+[MIT License](./LICENSE) © 2026 Hank (五花肉) / 算力白肉
+
+随意使用、随意修改、随意用于商业用途。但请记住：骂得准的话，记得说是 2BTI 干的！

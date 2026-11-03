@@ -10,6 +10,7 @@ venv/
 !assets/*.html
 *.png
 !assets/*.png
+!docs/images/*.png
 
 # 编辑器 / 系统
 .vscode/
