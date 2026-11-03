@@ -54,20 +54,33 @@ description: Use when the user wants a personality roast, savage profile, 毒舌
 
 **没有证据的毒舌是耍嘴皮子，有证据的毒舌才好笑。**
 
-必须从真实来源取事实：
+**通用层**（任何 agent 都能做）—— 从这些来源取事实：
 
 1. **对话历史** — 用户原话、做过的决定、推翻过的方案
-2. **Hindsight 记忆库** — `hindsight_recall(query="<行为模式/偏好/纠错记录>")`
-3. **人设文件** — `~/.hermes/memories/USER.md`、`~/.hermes/SOUL.md`
-4. **会话搜索** — `session_search(query="...")`
-5. **客观痕迹**（仅当评估对象是这台机器主人时才用，且需用户要求"看事实"）：
+2. **用户主动提供的画像** — 用户贴的行为描述、聊天记录、日志、截图
+3. **本次会话中可观察到的事实** — 用户这轮说了什么、要求了什么、否定了什么
+4. **可执行的客观痕迹**（仅当评估对象是这台机器主人，且用户要求"看事实"）：
    ```bash
    ps -eo pid,rss,pcpu,comm --sort=-rss | head -20
    docker ps --format '{{.Names}} | {{.Status}}'
    ```
 
+**增强层**（宿主 agent 提供了才用，没有就跳过，**不要因为缺少这些而卡住**）：
+
+| 能力 | 工具 | 用途 |
+|---|---|---|
+| 长期记忆检索 | `hindsight_recall(query="...")` | 跨会话的行为模式、偏好、纠错记录 |
+| 历史会话搜索 | `session_search(query="...")` | 过去的决策与推翻过程 |
+| 用户画像文件 | `~/.hermes/memories/USER.md`、`SOUL.md` | 已固化的偏好与红线 |
+
+> ⚠️ 增强层是 **Hermes 特有**。其他 agent（Claude Code / Codex / Cursor / Gemini CLI…）没有这些工具，
+> **只走通用层即可**，不要因为找不到 `hindsight_recall` 就停下来或向用户报错。
+
 **铁律**：每条"事实型"毒舌都要能追溯到具体证据，写进 `evidence`。
 没有依据的观察只能进 `subtitle` / `manifesto` 这类风格化字段。
+
+**证据不足怎么办**：宁可用风格化描述（`subtitle` / `manifesto` / 词云标签），
+也不要编造"事实型"毒舌。`evidence` 里只放真有的东西。
 
 ### 第 2 步：打分与写毒舌
 
@@ -95,14 +108,14 @@ description: Use when the user wants a personality roast, savage profile, 毒舌
 
 ```bash
 # 只出 HTML（目标名自动取环境变量）
-python3 ~/.hermes/skills/dushe-2bti/scripts/render.py profile.json -o out.html
+python3 scripts/render.py profile.json -o out.html
 
 # 出 HTML + 桌面 PNG + 手机竖版 PNG（推荐，手机版适合发社交平台）
-python3 ~/.hermes/skills/dushe-2bti/scripts/render.py profile.json \
+python3 scripts/render.py profile.json \
   -o out.html --png out.png --mobile
 
 # 显式指定目标名
-python3 ~/.hermes/skills/dushe-2bti/scripts/render.py profile.json -o out.html --name "张三"
+python3 scripts/render.py profile.json -o out.html --name "张三"
 ```
 
 渲染器**零外部依赖**（无 CDN），离线可用，HTML 可直接开源分发。
