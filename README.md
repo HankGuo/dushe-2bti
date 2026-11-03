@@ -5,10 +5,54 @@
 
 **16 型** · 4 轴 × 2 极 · 零外部依赖 · 离线可用 · 单文件 HTML
 
+---
+
+## 安装：复制这句话，发给你的 agent
+
 ```
-安装：npx skills add HankGuo/dushe-2bti
-使用：对 agent 说「毒舌我一下」
+帮我安装 https://github.com/HankGuo/dushe-2bti 这个 agent skill。
+
+做法（不要问我，你自己做完，全程不要让我装任何东西）：
+
+第 1 步：把安装器弄到手 —— 挑一个你这台机器能用的方式，都试不通再问我：
+   A（推荐，有 git，最稳）:
+     git clone --depth 1 https://github.com/HankGuo/dushe-2bti.git /tmp/dushe-2bti
+   B（没有 git，用 Python 标准库）:
+     python3 -c "import urllib.request;urllib.request.urlretrieve('https://raw.githubusercontent.com/HankGuo/dushe-2bti/main/install.py','/tmp/dushe-2bti-install.py')"
+   C（有 gh CLI）:
+     gh repo clone HankGuo/dushe-2bti /tmp/dushe-2bti
+
+第 2 步：运行安装器，它会自己探测你的 agent 目录、自己装、自己跑渲染验证：
+   - 用了 A 或 C：python3 /tmp/dushe-2bti/install.py
+   - 用了 B：python3 /tmp/dushe-2bti-install.py
+
+第 3 步：把验证结果和安装路径告诉我。
+
+装好后这个 skill 的用法是：对 agent 说「毒舌我一下」或「给我出个人格报告」。
 ```
+
+**用户只需要有 Python 3.9+**（macOS/Linux/Windows 都自带）。
+不需要 `npx`、不需要 `gh`、不需要 `pip install`、不需要装任何第三方包。
+复制粘贴一句话，剩下的 agent 全包。
+
+装到哪、怎么用、怎么改，见 **[INSTALL.md](INSTALL.md)**。
+
+<details>
+<summary>进阶：批量部署 / CI 用的命令行</summary>
+
+```bash
+# 零依赖安装器（本仓库自带，纯标准库）
+python3 install.py                    # 自动探测 agent 目录
+python3 install.py --list             # 看看本机有哪些 agent
+python3 install.py --target ~/.claude/skills
+python3 install.py --uninstall
+
+# 行业主流 CLI（可选，不是必需的）
+npx skills add HankGuo/dushe-2bti
+gh skill install HankGuo/dushe-2bti dushe-2bti --agent claude-code --scope user
+```
+
+</details>
 
 ---
 
@@ -48,42 +92,11 @@ L/F  对待不确定性        Lock（要结论）/ Flow（随缘）
 
 ---
 
-## Installation
+---
 
-安装方式取决于你的 agent。**用多个 agent 就每个都装一遍**（它们读不同的目录）。
+## 安装细节
 
-### 一行命令（推荐）
-
-```bash
-# Vercel Labs 的 skills CLI —— 跨 agent，认得 Hermes / Claude Code / Codex / Cursor / Gemini CLI
-npx skills add HankGuo/dushe-2bti
-
-# 或用 GitHub CLI 官方命令（需要 gh ≥ 2.90.0）
-gh skill install HankGuo/dushe-2bti dushe-2bti --agent claude-code --scope user
-```
-
-两个命令都会**自动识别你本机装了哪些 agent**，装到对应目录。
-
-- `gh skill install` 需要指定 skill 名（`dushe-2bti`）；`--agent` 可选
-  `claude-code` / `codex` / `cursor` / `gemini-cli` / `github-copilot` / `opencode` /
-  `openclaw` / `universal` 等 40+ 种，也支持 `--dir` 装到任意目录
-- `universal` 会装到 `.agents/skills/`（Agent Skills 通用目录），**除 Claude Code 外几乎所有 agent 都读它**
-- `gh skill` 会往 frontmatter 注入溯源元数据（`github-repo` / `github-ref` / `github-tree-sha`），
-  之后可以用 `gh skill update dushe-2bti` 一键更新
-
-先看看仓库里有什么：
-```bash
-npx skills add HankGuo/dushe-2bti --list
-gh skill preview HankGuo/dushe-2bti dushe-2bti
-```
-
-### 按 agent 手动安装
-
-```bash
-git clone https://github.com/HankGuo/dushe-2bti.git ~/.agents/skills/dushe-2bti
-```
-
-`.agents/skills/` 是 **Agent Skills 开放标准的通用目录**——除 Claude Code 外几乎所有 agent 都读它。
+装到哪、各 agent 的目录对照、批量部署、卸载 —— 见 **[INSTALL.md](INSTALL.md)**。
 
 | Agent | 安装目录 | 调用方式 |
 |---|---|---|
@@ -97,25 +110,6 @@ git clone https://github.com/HankGuo/dushe-2bti.git ~/.agents/skills/dushe-2bti
 | **OpenClaw** | `~/.openclaw/skills/` | 自动 |
 | **Goose / Amp / Windsurf / Roo / Cline / Zed / Warp / Kilo / Crush…** | 各自目录，多数也读 `.agents/skills/` | 自动 |
 | **裸 LLM API** | — | 把 `SKILL.md` 内容贴进 system prompt |
-
-**装多个 agent 时最省事的做法**：装到 `.agents/skills/`，再给 Claude Code 软链一个。
-
-```bash
-git clone https://github.com/HankGuo/dushe-2bti.git ~/.agents/skills/dushe-2bti
-ln -s ~/.agents/skills/dushe-2bti ~/.claude/skills/dushe-2bti
-```
-
-### 自动安装脚本
-
-```bash
-git clone https://github.com/HankGuo/dushe-2bti.git && cd dushe-2bti
-./install.sh --list      # 看看本机有哪些 agent 目录
-./install.sh              # 自动探测并安装
-./install.sh claude-code # 指定 agent
-./install.sh --uninstall  # 卸载
-```
-
----
 
 ## 怎么用
 
