@@ -431,7 +431,7 @@ def build_html(p: dict, subject: str = "") -> str:
 <div class="wrap">
 
   <div class="head">
-    <div class="kicker">毒 舌 2 B T I · {esc(fam['label'])}</div>
+    <div class="kicker">毒 舌 2 B T I · 算 力 白 肉 · {esc(fam['label'])}</div>
     <h1 class="title">{esc(title)}</h1>
     <div class="subtitle">{esc(p.get('subtitle',''))}</div>
   </div>
@@ -488,7 +488,7 @@ def build_html(p: dict, subject: str = "") -> str:
   </div>
 
   <div class="foot">
-    <span class="brand">毒舌2BTI</span> · 自创人格坐标系 · v1.0<br>
+    <span class="brand">毒舌2BTI</span> · 算力白肉 · 16型人格坐标系<br>
     生成于 {esc(p.get('meta',{}).get('generated_at',''))} · 本报告 100% 属实，0% 温柔
   </div>
 </div>
